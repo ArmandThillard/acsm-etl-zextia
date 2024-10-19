@@ -1,2 +1,8 @@
 # GDrive key file
 client_key.json
+
+# Environment file
+.env
+
+# Python cache files
+__pycache__/*
