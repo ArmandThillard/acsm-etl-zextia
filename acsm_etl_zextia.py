@@ -7,6 +7,7 @@ import live_timings
 import transform
 
 cars = gdrive_service.get_cars()
+classes = gdrive_service.get_classes()
 
 lt = live_timings.LiveTimings(acsm_service.get_live_timings())
 
@@ -21,4 +22,9 @@ if connected_drivers is not None:
 if disconnected_drivers is not None:
     drivers = drivers + disconnected_drivers
 
-gdrive_service.set_results(transform.transform(drivers, cars))
+formatted_drivers = transform.transform(drivers, cars)
+
+pts = transform.points_by_driver(formatted_drivers, classes)
+
+gdrive_service.set_results(formatted_drivers)
+gdrive_service.set_pts(pts)

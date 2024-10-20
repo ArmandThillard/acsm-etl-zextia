@@ -17,6 +17,12 @@ def get_cars():
     sheet = client.open('Décompte Point Simracing').worksheet("Voitures")
     return sheet.get_all_records()
 
+# Get classes list
+def get_classes():
+    sheet = client.open('Décompte Point Simracing').worksheet("Catégories")
+    return sheet.get_all_records()
+
+
 # Update "Résultats" sheet with ACSM live timings data
 def set_results(results):
     sheet = client.open('Décompte Point Simracing').worksheet("Résultats")
@@ -29,4 +35,15 @@ def set_results(results):
         sheet.insert_row(list(res.values()), index)
         index += 1
 
+# Update "Cumul" sheet
+def set_pts(pts):
+    sheet = client.open('Décompte Point Simracing').worksheet("Cumul")
+    index = 2
 
+    if sheet.row_count > 1:
+        sheet.batch_clear(['A2:G' + str(sheet.row_count)])
+
+    for d, pt in pts.items():
+        print(pt)
+        sheet.insert_row(list(pt.values()), index)
+        index += 1
