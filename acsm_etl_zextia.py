@@ -4,27 +4,29 @@ import json
 import gdrive_service
 import acsm_service
 import live_timings
+import result
+import results
 import transform
 
-cars = gdrive_service.get_cars()
-classes = gdrive_service.get_classes()
 
-lt = live_timings.LiveTimings(acsm_service.get_live_timings())
+tracks = gdrive_service.get_tracks()
+# print(tracks)
+results = results.Results(acsm_service.get_results_list())
 
-connected_drivers = lt.get_connected_drivers()
-disconnected_drivers = lt.get_disconnected_drivers()
+last_result = results.get_last()
 
-drivers = []
+result = acsm_service.get_result(last_result['results_json_url'])
 
-if connected_drivers is not None:
-    drivers = drivers + connected_drivers
+formatted_result = transform.transform(result, last_result, tracks)
 
-if disconnected_drivers is not None:
-    drivers = drivers + disconnected_drivers
+gdrive_service.set_results(formatted_result)
 
-formatted_drivers = transform.transform(drivers, cars)
+# Sum up points
+sheet_results = gdrive_service.get_results()
 
-pts = transform.points_by_driver(formatted_drivers, classes)
+pts = transform.points_by_driver(sheet_results)
 
-gdrive_service.set_results(formatted_drivers)
 gdrive_service.set_pts(pts)
+
+
+

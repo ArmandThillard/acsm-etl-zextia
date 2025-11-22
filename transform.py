@@ -1,65 +1,43 @@
 # Transform ACSM live timings json to fit gsheet file
-def transform(drivers, carList):
+def transform(result, result_info, tracks):
     res = []
-    
-    for driver in drivers:
-        name = driver['CarInfo']['DriverName']
-        for car, info in driver['Cars'].items():
-            c = {
-                'driver': name,
-                'carName': info['CarName'],
-                'carRef': car,
-                'class': next((sub for sub in carList if sub['Ref'] == car), None)['Catégorie'],
-                'numLaps': info['NumLaps'],
-                'bestLap': info['BestLap'],
-                'topSpeed': info['TopSpeedBestLap'],
-                'totalLapTime': info['TotalLapTime'],
-            }
-            res.append(c)
+
+    lookup = {item['Circuit']: item['Longueur (m)'] for item in tracks}
+
+    for driver_result in result['Result']:
+        dr = {
+            'DriverName': driver_result['DriverName'],
+            'track': result_info['track'],
+            'session_type': result_info['session_type'],
+            'CarModel': driver_result['CarModel'],
+            'TotalTime': driver_result['TotalTime'],
+            'NumLaps': driver_result['NumLaps'],
+            'GridPosition': driver_result['GridPosition'],
+            'Distance': lookup['paul_ricard_2021'] * driver_result['NumLaps'] / 1000
+        }
+        res.append(dr)
     
     return res
 
 # Calculate points by driver
-def points_by_driver(drivers, classes):
+def points_by_driver(results):
     res = {}
 
-    for driver in drivers:
-        if driver['driver'] in res:
-            
-            if driver['class'] == 'GT3':
-                res[driver['driver']]['lapsGt3'] += driver['numLaps']
-                res[driver['driver']]['ptsGt3'] += next((sub for sub in classes if sub['Catégorie'] == 'GT3'), 0)['Pts/tour'] * driver['numLaps']
-            
-            if driver['class'] == 'GT4':
-                res[driver['driver']]['lapsGt4'] += driver['numLaps']
-                res[driver['driver']]['ptsGt4'] += next((sub for sub in classes if sub['Catégorie'] == 'GT4'), 0)['Pts/tour'] * driver['numLaps']
-
-
-            res[driver['driver']]['totalLaps'] = res[driver['driver']]['lapsGt3'] + res[driver['driver']]['lapsGt4']
-            res[driver['driver']]['totalPts'] = res[driver['driver']]['ptsGt3'] + res[driver['driver']]['ptsGt4']
+    for result in results:
+        if result['Pilote'] in res:
+            # print(result['Distance parcourue (km)'])
+            res[result['Pilote']]['Temps total (min)'] += (result['Temps total (ms)'] / 1000 / 60)
+            res[result['Pilote']]['Tours'] += result['Tours']
+            res[result['Pilote']]['Distance parcourue (km)'] += result['Distance parcourue (km)']
         else:
             acc = {
-                'driver': driver['driver'],
-                'lapsGt3': 0,
-                'lapsGt4': 0,
-                'totalLaps': 0,
-                'ptsGt3': 0,
-                'ptsGt4': 0,
-                'totalPts': 0,
+                'Pilote': result['Pilote'],
+                'Temps total (s)': result['Temps total (ms)'] / 1000 / 60,
+                'Tours': result['Tours'],
+                'Distance parcourue (km)': result['Distance parcourue (km)'],
+                'Points': (result['Temps total (ms)'] / 1000 / 60) * 2,
+                'Bonus': 0,
             }
+            res[result['Pilote']] = acc
 
-            if driver['class'] == 'GT3':
-                acc['lapsGt3'] = driver['numLaps']
-                acc['totalLaps'] = driver['numLaps']
-                acc['ptsGt3'] = next((sub for sub in classes if sub['Catégorie'] == 'GT3'), 0)['Pts/tour'] * driver['numLaps']
-                acc['totalPts'] = acc['ptsGt3']
-            
-            if driver['class'] == 'GT4':
-                acc['lapsGt4'] = driver['numLaps']
-                acc['totalLaps'] = driver['numLaps']
-                acc['ptsGt4'] = next((sub for sub in classes if sub['Catégorie'] == 'GT4'), 0)['Pts/tour'] * driver['numLaps']
-                acc['totalPts'] = acc['ptsGt4']
-
-            res[driver['driver']] = acc
-    
     return res
