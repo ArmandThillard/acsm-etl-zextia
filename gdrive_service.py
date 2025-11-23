@@ -14,29 +14,29 @@ client = gspread.authorize(creds)
 # Get the list of tracks
 def get_tracks():
     #Fetch the sheet
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Circuits")
+    sheet = client.open('Décompte Point Simracing').worksheet("Circuits")
     return sheet.get_all_records()
 
 # Get results
 def get_results():
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Résultats")
+    sheet = client.open('Décompte Point Simracing').worksheet("Résultats")
     return sheet.get_all_records()
     
 # Get last result
 def get_last_result():
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Dernier résultat")
+    sheet = client.open('Décompte Point Simracing').worksheet("Dernier résultat")
     return sheet.get_all_records()
 
 # Update "Résultats" sheet with ACSM result data
 def set_results(results):
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Résultats")
+    sheet = client.open('Décompte Point Simracing').worksheet("Résultats")
 
     for res in results:
         sheet.insert_row(list(res.values()), 2)
 
 # Update "Cumul" sheet
 def set_pts(pts):
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Cumul")
+    sheet = client.open('Décompte Point Simracing').worksheet("Cumul")
     index = 2
 
     if sheet.row_count > 1:
@@ -48,6 +48,6 @@ def set_pts(pts):
         
 # Update "Dernier résultat" sheet
 def set_last_result(last_result):
-    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Dernier résultat")
+    sheet = client.open('Décompte Point Simracing').worksheet("Dernier résultat")
     sheet.insert_row(list(last_result.values()), 2)
         
