@@ -32,7 +32,7 @@ def points_by_driver(results):
         else:
             acc = {
                 'Pilote': result['Pilote'],
-                'Temps total (s)': result['Temps total (ms)'] / 1000 / 60,
+                'Temps total (min)': result['Temps total (ms)'] / 1000 / 60,
                 'Tours': result['Tours'],
                 'Distance parcourue (km)': result['Distance parcourue (km)'],
                 'Points': (result['Temps total (ms)'] / 1000 / 60) * 2,

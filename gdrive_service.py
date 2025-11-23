@@ -21,14 +21,18 @@ def get_tracks():
 def get_results():
     sheet = client.open('Copie de Décompte Point Simracing').worksheet("Résultats")
     return sheet.get_all_records()
+    
+# Get last result
+def get_last_result():
+    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Dernier résultat")
+    return sheet.get_all_records()
 
 # Update "Résultats" sheet with ACSM result data
 def set_results(results):
     sheet = client.open('Copie de Décompte Point Simracing').worksheet("Résultats")
-    index = 2
 
     for res in results:
-        sheet.insert_row(list(res.values()), index)
+        sheet.insert_row(list(res.values()), 2)
 
 # Update "Cumul" sheet
 def set_pts(pts):
@@ -41,3 +45,9 @@ def set_pts(pts):
     for d, pt in pts.items():
         print(pt)
         sheet.insert_row(list(pt.values()), index)
+        
+# Update "Dernier résultat" sheet
+def set_last_result(last_result):
+    sheet = client.open('Copie de Décompte Point Simracing').worksheet("Dernier résultat")
+    sheet.insert_row(list(last_result.values()), 2)
+        
